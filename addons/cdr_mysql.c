@@ -280,7 +280,15 @@ db_reconnect:
 				 !strcmp(cdrname, "end")) {
 				struct ast_tm tm;
 				char timestr[128];
-				ast_localtime(&cdr->start, &tm, ast_str_strlen(cdrzone) ? ast_str_buffer(cdrzone) : NULL);
+				const struct timeval *tv;
+				if (!strcmp(cdrname, "start")) {
+					tv = &cdr->start;
+				} else if (!strcmp(cdrname, "answer")) {
+					tv = &cdr->answer;
+				} else {
+					tv = &cdr->end;
+				}
+				ast_localtime(tv, &tm, ast_str_strlen(cdrzone) ? ast_str_buffer(cdrzone) : NULL);
 				ast_strftime(timestr, sizeof(timestr), DATE_FORMAT, &tm);
 				value = ast_strdupa(timestr);
 			} else if (!strcmp(cdrname, "calldate")) {
